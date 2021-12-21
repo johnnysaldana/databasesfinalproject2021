@@ -14,10 +14,23 @@ end;
 //
 delimiter ;
 
+delimiter //
+drop procedure if exists retrieveApiKey //
+create procedure retrieveApiKey(IN in_email VARCHAR(25))
+BEGIN
+	if in_email IN (select email FROM Users) THEN
+	   select api_key from Users WHERE email = in_email;
+	else
+		SELECT "error: that email does not exist in database" as 'Error Message';
+	end if;
+end;
+//
+delimiter ;
+
 /* add new user information to Users table if don't already have account */
 delimiter //
-drop procedure if exists GenerateApiUser //
-create procedure GenerateApiUser(IN first_name varchar(25), IN last_name varchar(25), IN in_email varchar(25))
+drop procedure if exists generateApiUser //
+create procedure generateApiUser(IN first_name varchar(25), IN last_name varchar(25), IN in_email varchar(25))
 BEGIN
 	if in_email in (select email from Users) then
 	   select 'error: this email already exists' as 'Error Message';
@@ -36,7 +49,7 @@ BEGIN
 	if stock_ticker_name in (select stock_name from Company_Metadata) then
 	   SELECT close_price from Company_Metadata as C, Daily_combined as D where C.stock_name = stock_ticker_name AND D.stock_id = C.stock_id;
 	else
-		select "error: this stock does not exist in database" as 'Error Message';
+		select 'error: this stock does not exist in database' as 'Error Message';
 	end if;
 end;
 //
